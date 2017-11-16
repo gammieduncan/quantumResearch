@@ -2,7 +2,7 @@ from dwave_sapi2.remote import RemoteConnection
 from dwave_sapi2.core import solve_ising, solve_qubo
 from random import *
 
-def randomWalk:
+def randomWalk():
 
 	url = 'https://qfe.nas.nasa.gov/sapi'
 	token = 'USRA-d8907d3de65f4b5c3310b584cf95948ea6665d9a'
@@ -40,6 +40,13 @@ def randomWalk:
 	#add the last coupler to the path, the "closing" coupler of the cycle
 	path.append(randCoupler)
 
+	#finally, write to file
+	f = open('couplersFile.txt', 'w')
+	
+	for i in path:
+		f.write("%s\n" % i) #, '\n')
+
+	f.close()
 	print path
 
 	#print couplers[0][0]
@@ -49,11 +56,11 @@ def getCouplers(c, q1):
 	toReturn = []
 	#iterate through the couplers, if q1 is in one of them then add to list
 	for i in c:
-		if q1 in c[i]:
-			toReturn.append(c[i])
+		if q1 in i:
+			toReturn.append(i)
 
 	return toReturn
 
 
-
+randomWalk()
 
