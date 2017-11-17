@@ -2,17 +2,24 @@ from dwave_sapi2.remote import RemoteConnection
 from dwave_sapi2.core import solve_ising, solve_qubo
 from random import *
 
-def randomWalk():
+filename = "couplersCycles.txt"
+f = open(filename, "a+")
+#qubits = []
+#couplers = []
+
+def randomWalk(qubits, couplers):
 
 	path = [] #the list of couplers in our random walk, to be written to a file
 	randCoupler = [] #the random coupler connected to q1
+	
+	print qubits
 
 	q1 = randint(qubits[0], qubits[len(qubits) - 1]) #random qubit index from range of indices
 
 	#loop until we find a qubit we've already added to path
 	while True: 
 		#get list of couplers attached to q1
-		q1Couplers = getCouplers(q1)
+		q1Couplers = getCouplers(couplers, q1)
 		#assign a random coupler from that list
 		randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]
 		#assign q2 to be the qubit in the coupler that is not equal to q1
@@ -40,7 +47,7 @@ def randomWalk():
 	#print couplers[0][0]
 
 #returns list of couplers in c with q1 included
-def getCouplers(q1):
+def getCouplers(couplers, q1):
 	toReturn = []
 	#iterate through the couplers, if q1 is in one of them then add to list
 	for i in couplers:
@@ -61,24 +68,43 @@ def generateCycles():
 
 	# get the solver
 	solver = conn.get_solver('C16')
+	
+	#print qubits, " q"
 
 	qubits = solver.properties.get("qubits") #list of qubits
 	couplers = solver.properties.get("couplers") #list of couplers
+	
+	
+	size = 10000
+	for j in range(int(size)):
+		f.write("%s\n" % j)
+		randomWalk(qubits, couplers)
+		f.write("\n")
 
-	for i in range(0, 10,000):
-		f.write("%s\n" % i) #include the number of the trial
-      	randomWalk()
-	  	f.write("\n") #make a line break after it
+#	for k in range(10,000):
+#		print k
+#		f.write("%s\n" % k)
+#		randomWalk()
+#		f.write("\n")
+	
+	print "out of loop"
 
 #open the file, generate the cycles, close the file
 def main():
-	filename = "couplersFile.txt"
-	f = open(filename, "a+") #a+ for append
+#	filename = "couplersFile.txt"
+#	f = open(filename, "a+") #a+ for append
+#	print "ok"
 	generateCycles()
 	f.close()
 
 #f (the file), and the sets of qubits and couplers are now global variables
-f, qubits, couplers = None, None, None
+print "start"
+
+#filename = "couplersFileCycles.txt"
+#f = open(filename, "a+")
+#qubits = []
+#couplers = []
+
 main()
 
 
