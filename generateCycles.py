@@ -2,10 +2,8 @@ from dwave_sapi2.remote import RemoteConnection
 from dwave_sapi2.core import solve_ising, solve_qubo
 from random import *
 
-filename = "couplersCycles.txt"
+filename = "couplersCycles.txt" #file for the paths of couplers
 f = open(filename, "a+")
-#qubits = []
-#couplers = []
 
 def randomWalk(qubits, couplers):
 
@@ -46,6 +44,8 @@ def randomWalk(qubits, couplers):
 	for i in path:
 		f.write("%s\n" % i) #, '\n')
 
+	#record the length
+	f.write("%s\n" % len(randCouplers)) 
 
 #returns list of couplers in c with q1 included
 def getCouplers(couplers, q1):
@@ -64,13 +64,13 @@ def getCouplers(couplers, q1):
 def setUpConnection():
 
  	url = 'https://qfe.nas.nasa.gov/sapi'
-        token = 'USRA-d8907d3de65f4b5c3310b584cf95948ea6665d9a'
+    token = 'USRA-d8907d3de65f4b5c3310b584cf95948ea6665d9a'
 
-        # create a remote connection
-        conn = RemoteConnection(url, token)
+    # create a remote connection
+    conn = RemoteConnection(url, token)
 
-        # get the solver
-        solver = conn.get_solver('C16')
+    # get the solver
+    solver = conn.get_solver('C16')
 
 	return solver
 
@@ -86,7 +86,7 @@ def generateCycles():
 	
 	size = 10000
 	for j in range(int(size)):
-		f.write("%s\n" % j)
+		f.write("%s\n" % j) #records which cycle # it is
 		randomWalk(qubits, couplers)
 		f.write("\n")
 
