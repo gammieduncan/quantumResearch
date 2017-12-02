@@ -2,7 +2,7 @@ from dwave_sapi2.remote import RemoteConnection
 from dwave_sapi2.core import solve_ising, solve_qubo
 from random import *
 
-filename = "couplersCycles.txt"
+filename = "cycles.txt"
 f = open(filename, "a+")
 #qubits = []
 #couplers = []
