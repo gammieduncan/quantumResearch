@@ -21,11 +21,13 @@ def randomWalk(qubits, couplers):
 	#check to make sure there are couplers the random qubit's attached to
 	while len(q1Couplers) == 0:
 		q1 = randint(qubits[0], qubits[len(qubits) - 1]) #random qubit index from r$
-		q1Couplers = getCouplers(couplers, q1)
 
 		
 	#loop until we find a qubit we've already added to path
 	while True:
+
+		#get the couplers associated with q1
+		q1Couplers = getCouplers(couplers, q1)
 
 		#assign a random coupler from that list
 		randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]
