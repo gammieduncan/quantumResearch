@@ -2,11 +2,11 @@ from dwave_sapi2.remote import RemoteConnection
 from dwave_sapi2.core import solve_ising, solve_qubo
 from random import *
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 filename = "cycles.txt"
-=======
-filename = "couplersCycles.txt" #file for the paths of couplers
->>>>>>> 3e627ec99a0de3a1438d703e585a10ba2911e74e
+#=======
+filename = "cycles.txt" #file for the paths of couplers
+#>>>>>>> 3e627ec99a0de3a1438d703e585a10ba2911e74e
 f = open(filename, "a+")
 
 def randomWalk(qubits, couplers):
@@ -21,16 +21,21 @@ def randomWalk(qubits, couplers):
 	#check to make sure there are couplers the random qubit's attached to
 	while len(q1Couplers) == 0:
 		q1 = randint(qubits[0], qubits[len(qubits) - 1]) #random qubit index from r$
+		q1Couplers = getCouplers(couplers, q1)
+#		randCouplers = q1Couplers[randint(0, len(q1Couplers)-1)]		
 
-		
+	randCoupler = []
+
 	#loop until we find a qubit we've already added to path
 	while True:
 
 		#get the couplers associated with q1
-		q1Couplers = getCouplers(couplers, q1)
+		#q1Couplers = getCouplers(couplers, q1)
 
 		#assign a random coupler from that list
-		randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]
+		while randCoupler in path or len(randCoupler) == 0:
+			randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]		
+		#randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]
 
 		#assign q2 to be the qubit in the coupler that is not equal to q1
 		q2 = randCoupler[0] if randCoupler[0] != q1 else randCoupler[1]
@@ -43,15 +48,18 @@ def randomWalk(qubits, couplers):
 		else:
 			path.append(randCoupler)
 			q1 = q2
+			q1Couplers = getCouplers(couplers, q1)
 
 	#add the last coupler to the path, the "closing" coupler of the cycle
 	path.append(randCoupler)
+	
+	print path
 
 	for i in path:
 		f.write("%s\n" % i) #, '\n')
 
 	#record the length
-	f.write("%s\n" % len(randCouplers)) 
+	#f.write("%s\n" % len(randCouplers)) 
 
 #returns list of couplers in c with q1 included
 def getCouplers(couplers, q1):
@@ -70,13 +78,13 @@ def getCouplers(couplers, q1):
 def setUpConnection():
 
  	url = 'https://qfe.nas.nasa.gov/sapi'
-    token = 'USRA-d8907d3de65f4b5c3310b584cf95948ea6665d9a'
+	token = 'USRA-d8907d3de65f4b5c3310b584cf95948ea6665d9a'
 
-    # create a remote connection
-    conn = RemoteConnection(url, token)
+	# create a remote connection
+	conn = RemoteConnection(url, token)
 
-    # get the solver
-    solver = conn.get_solver('C16')
+    	# get the solver
+    	solver = conn.get_solver('C16')
 
 	return solver
 
@@ -89,8 +97,11 @@ def generateCycles():
 
 	couplers = solver.properties.get("couplers") #list of couplers
 	qubits = solver.properties.get("qubits")
+
+	print qubits 
 	
 	size = 10000
+	#size = 100
 	for j in range(int(size)):
 		f.write("%s\n" % j) #records which cycle # it is
 		randomWalk(qubits, couplers)
