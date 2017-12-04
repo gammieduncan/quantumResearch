@@ -2,11 +2,8 @@ from dwave_sapi2.remote import RemoteConnection
 from dwave_sapi2.core import solve_ising, solve_qubo
 from random import *
 
-#<<<<<<< HEAD
 filename = "cycles.txt"
-#=======
 filename = "cycles.txt" #file for the paths of couplers
-#>>>>>>> 3e627ec99a0de3a1438d703e585a10ba2911e74e
 f = open(filename, "a+")
 
 def randomWalk(qubits, couplers):
@@ -22,26 +19,26 @@ def randomWalk(qubits, couplers):
 	while len(q1Couplers) == 0:
 		q1 = randint(qubits[0], qubits[len(qubits) - 1]) #random qubit index from r$
 		q1Couplers = getCouplers(couplers, q1)
-#		randCouplers = q1Couplers[randint(0, len(q1Couplers)-1)]		
 
 	randCoupler = []
 
 	#loop until we find a qubit we've already added to path
 	while True:
 
-		#get the couplers associated with q1
-		#q1Couplers = getCouplers(couplers, q1)
-
 		#assign a random coupler from that list
-		while randCoupler in path or len(randCoupler) == 0:
+		while True:
 			randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]		
-		#randCoupler = q1Couplers[randint(0, len(q1Couplers)-1)]
+			if checkCoupler(randCoupler, path):
+				break			
 
 		#assign q2 to be the qubit in the coupler that is not equal to q1
 		q2 = randCoupler[0] if randCoupler[0] != q1 else randCoupler[1]
+	
+		randCoupler = [q1, q2] #reformat coupler so q1 is always first
 
 		#if q2 is already in the path then we break, we've found a cycle
 		if any(q2 in i for i in path):
+			path = trimPath(q2, path)
 			break
 
 		#otherwise add it to the path and set q1 to q2
@@ -60,6 +57,26 @@ def randomWalk(qubits, couplers):
 
 	#record the length
 	#f.write("%s\n" % len(randCouplers)) 
+
+#check if this is a valid random coupler to branch off to
+def checkCoupler(randCoupler, path):
+
+	for i in path:  #go thru every coupler in path
+		if set(randCoupler) == set(i):  #if randCoupler has same elements as some i
+			return False  #then return false
+	
+	return True
+
+#trim the path so it's only the cycle without a "tail"
+def trimPath(q2, path):
+	
+	for i in path:  #examine each coupler
+		if i[0] == q2:    #if the coupler's q1 index = q2
+			ind = path.index(i)
+			path = path[ind:]    #then slice path from i-end
+			break
+
+	return path
 
 #returns list of couplers in c with q1 included
 def getCouplers(couplers, q1):
